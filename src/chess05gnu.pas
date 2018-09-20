@@ -1,16 +1,18 @@
+{$mode iso}
+{$modeswitch nonlocalgoto}
 PROGRAM CHESS(INPUT,OUTPUT);
 
 { add labels 130, 150, 170, 200, 210 and vars fgoto, fgoto17 to handle
   jumps into blocks with GNU Pascal }
 
-LABEL 
+LABEL
   1,                                   (* INITIALIZE FOR A NEW GAME *)
   2, 200,                              (* EXECUTE MACHINES MOVE *)
   9;                                   (* END OF PROGRAM *)
 
 CONST
   AA = 1;       ZA = 10;               (* CHARACTERS IS A WORD *)
-  AC = " ";     ZC = "_";              (* CHARACTER LIMITS *)
+  AC = ' ';     ZC = '_';              (* CHARACTER LIMITS *)
   AD = -21;     ZD = +21;              (* DIRECTION LIMITS *)
   AJ = 0;       ZJ = 73;               (* CHARACTERS IN A STRING *)
   AK = 0;       ZK = 16;               (* SEARCH DEPTH LIMITS *)
@@ -31,7 +33,7 @@ CONST
 
   LPP = 20;                            (* LINES PER PAGE *)
   PZX8 = 16777216;                     (* 2^(ZX-7) *)
-  
+
   SYNCF = 1;                           (* FIRST CAPTURE SYNTAX *)
   SYNCL = 36;                          (* LAST CAPTURE SYNTAX *)
   SYNMF = 37;                          (* FIRST MOVE SYNTAX *)
@@ -88,7 +90,7 @@ TYPE                                   (* SIMPLE TYPES *)
       0: ( RBIS  : RC);                (* INDEXED BY SQUARE *)
       1: ( RBIRF : ARRAY [TR,TF] OF TP);(* INDEXED BY RANK AND FILE *)
     END;
-  
+
   RA = PACKED ARRAY [TA] OF TC;        (* WORDS OF CHARACTERS *)
   RN = PACKED ARRAY [TN] OF TC;        (* MESSAGES *)
   RJ = PACKED ARRAY [TJ] OF TC;        (* STRINGS *)
@@ -133,7 +135,7 @@ TYPE                                   (* SIMPLE TYPES *)
     END;
 
   RX = ARRAY [TS] OF RS;               (* ATTACK MAPS *)
-  
+
   RY = PACKED RECORD                   (* MOVE SYNTAX DESCRIPTOR *)
     RYLS : RD;                         (* LEFT SIDE DESCRIPTOR *)
     RYCH : TC;                         (* MOVE OR CAPTURE *)
@@ -143,7 +145,7 @@ TYPE                                   (* SIMPLE TYPES *)
   RE = ARRAY [TW] OF TV;               (* ARRAY OF VALUES *)
   RF = ARRAY [TW] OF RM;               (* ARRAY OF MOVES *)
 
-VAR 
+VAR
   (* DATA BASE *)
 
   BOARD : RB;                          (* THE BOARD *)
@@ -176,7 +178,7 @@ VAR
   MBPWN : ARRAY [TM] OF TI;            (* NUMBER OF PAWNS BY SIDE *)
   MBTOT : TV;                          (* TOTAL MATERIAL ON MBOARD *)
   NODES : TI;                          (* NUMBER OF MOVES SEARCHEO *)
-  
+
   JNTK  : TK;                          (* PLY INDEX *)
   JMTK  : TK;                          (* ITERATION *)
   JNTM  : TM;                          (* SIDE TO MOVE *)
@@ -301,7 +303,9 @@ FUNCTION SIGN(A,B:TI): TI;             (* SIGN OF B APPLIED TO
                                           ABSOLUTE VALUE OF A *)
 
 BEGIN
-SIGN := TRUNC(B/ABS(B)) * ABS(A);
+	if (B=0) then SIGN := 0
+	else
+	SIGN := TRUNC(B/ABS(B)) * ABS(A);
 END;  (* SIGN *)
 
 
@@ -310,7 +314,7 @@ PROCEDURE SORTIT                       (* SORT PRELIMINARY SCORES *)
    VAR B:RF;                           (* ARRAY OF MOVES *)
    C:TW);                              (* NUMBER OF ENTRIES *)
 
-VAR 
+VAR
   INTB : TB;                           (* LOOP EXIT FLAG *)
   INTW : TW;                           (* OUTER LOOP INDEX *)
   INTI : TI;                           (* INNER LOOP INDEX *)
@@ -339,12 +343,12 @@ FOR INTW := AW+2 TO C DO
 END;  (* SORTIT *)
 
 
-PROCEDURE ANDRS                        (* INTERSECTION OF TWO BIT 
+PROCEDURE ANDRS                        (* INTERSECTION OF TWO BIT
                                           BOARDS *)
   (VAR C:RS;                           (* RESULT *)
    A, B:RS);                           (* OPERANDS *)
 
-VAR 
+VAR
   INTY : TY;                           (* BIT BOARD WORD INDEX *)
 
 BEGIN
@@ -366,7 +370,7 @@ PROCEDURE CPYRS                        (* COPY OF A BIT BOARD *)
  (VAR C:RS;                            (* RESULT *)
   A:RS);                               (* OPERAND *)
 
-VAR 
+VAR
   INTY : TY;                           (* BIT BOARD NORO INDEX *)
 
 BEGIN
@@ -379,7 +383,7 @@ PROCEDURE IORRS                        (* UNION OF TWO BIT BOARDS *)
  (VAR C:RS;                            (* RESULT *)
   A, B:RS);                            (* OPERANDS *)
 
-VAR 
+VAR
   INTY : TY;                           (* BIT BOARD WORD INDEX *)
 
 BEGIN
@@ -391,7 +395,7 @@ END;  (* IORRS *)
 PROCEDURE  NEWRS                       (* CLEAR BIT BOARD *)
  (VAR  A:RS);                          (* BIT BOARD TO CLEAR *)
 
-VAR 
+VAR
   INTY : TY;                           (* BIT BOARD WORD INDEX *)
 
 BEGIN
@@ -420,10 +424,10 @@ FUNCTION NXTTS                         (* NEXT ELEMENT IN BIT BOARD *)
  ): TB;                                (* TRUE IFF ANY SQUARES WERE SET
                                           INITIALLY *)
 
-LABEL 
+LABEL
   11;                                  (* RETURN *)
 
-VAR 
+VAR
   INTX : TX;                           (* BIT BOARD BIT INDEX *)
   INTY : TY;                           (* BIT BOARD WORD INDEX *)
   X : RK;                              (* KLUDGE WORD *)
@@ -466,7 +470,7 @@ END;  (* NXTTS *)
 FUNCTION CNTRS                         (* COUNT NENBERS OF A BIT BOARD *)
 (A:RS): TS;                            (* BIT BOARD TO COUNT *)
 
-VAR 
+VAR
   INTS : TS;                           (* TEMPORARY *)
   INRS : RS;                           (* SCRATCH *)
   IMTS : TS;                           (* SCRATCH *)
@@ -502,7 +506,7 @@ PROCEDURE SFTRS                        (* SHIFT BIT BOARD *)
  B:RS;                                 (* SOURCE *)
  C:TE);                                (* DIRECTION *)
 
-VAR 
+VAR
   INTS : TS;                           (* SCRATCH *)
 
 BEGIN
@@ -617,7 +621,7 @@ FUNCTION NULRS                         (* NULL BIT BOARD *)
 (A:RS)                                 (* BIT BOARD TO CHECK *)
 : TB;                                  (* TRUE IF BIT BOARD EMPTY *)
 
-VAR 
+VAR
   INTY : TY;                           (* BIT BOARD WORD INDEX *)
   INTB : TB;                           (* TEMPORARY VALUE *)
 
@@ -641,7 +645,7 @@ END;  (* NULMVB *)
 
 PROCEDURE INICON;                      (* INITIALIZE GLOBAL CONSTANTS *)
 
-VAR 
+VAR
   INTD : TD;                           (* DIRECTION INDEX *)
   INTE : TE;                           (* DIRECTION *)
   INTF : TF;                           (* FILE INDEX *)
@@ -664,19 +668,19 @@ BEGIN
     WITH RYLS DO
     BEGIN
       RDPC := TRUE;
-      RDSL := A[AA+0] <> " ";
-      RDKQ := A[AA+1] <> " ";
-      RDNB := A[AA+2] <> " ";
-      RDRK := A[AA+3] <> " ";
+      RDSL := A[AA+0] <> ' ';
+      RDKQ := A[AA+1] <> ' ';
+      RDNB := A[AA+2] <> ' ';
+      RDRK := A[AA+3] <> ' ';
     END;
     RYCH := A[AA+4];
     WITH RYRS DO
     BEGIN
-      RDPC := A[AA+5] <> " ";
-      RDSL := A[AA+6] <> " ";
-      RDKQ := A[AA+7] <> " ";
-      RDNB := A[AA+8] <> " ";
-      RDRK := A[AA+9] <> " ";
+      RDPC := A[AA+5] <> ' ';
+      RDSL := A[AA+6] <> ' ';
+      RDKQ := A[AA+7] <> ' ';
+      RDNB := A[AA+8] <> ' ';
+      RDRK := A[AA+9] <> ' ';
     END;
   END;
   INTI := INTI+1;
@@ -711,49 +715,49 @@ BEGIN  (* INICOM *)
 
   (** INITIALIZE PIECE CHARACTERISTICS *)
 
-  INIXTP(LP,"P",LITE,EP,FALSE,B1,B2,1*64);
-  INIXTP(LR,"R",LITE,ER,TRUE ,S1,S4,5*64);
-  INIXTP(LN,"N",LITE,EN,FALSE,N1,N8,3*64);
-  INIXTP(LB,"B",LITE,EB,TRUE ,B1,B4,3*64);
-  INIXTP(LQ,"Q",LITE,EQ,TRUE ,B1,S4,9*64);
-  INIXTP(LK,"K",LITE,EK,FALSE,B1,S4,0);
-  INIXTP(DP,"p",DARK,EP,FALSE,B3,B4,-1*64);
-  INIXTP(DR,"r",DARK,ER,TRUE ,S1,S4,-5*64);
-  INIXTP(DN,"n",DARK,EN,FALSE,N1,N8,-3*64);
-  INIXTP(DB,"b",DARK,EB,TRUE ,B1,B4,-3*64);
-  INIXTP(DQ,"q",DARK,EQ,TRUE ,B1,S4,-9*64);
-  INIXTP(DK,"k",DARK,EK,FALSE,B1,S4,0);
-  INIXTP(MT,"-",NONE,EP,FALSE,B2,B1,0);
+  INIXTP(LP,'P',LITE,EP,FALSE,B1,B2,1*64);
+  INIXTP(LR,'R',LITE,ER,TRUE ,S1,S4,5*64);
+  INIXTP(LN,'N',LITE,EN,FALSE,N1,N8,3*64);
+  INIXTP(LB,'B',LITE,EB,TRUE ,B1,B4,3*64);
+  INIXTP(LQ,'Q',LITE,EQ,TRUE ,B1,S4,9*64);
+  INIXTP(LK,'K',LITE,EK,FALSE,B1,S4,0);
+  INIXTP(DP,'p',DARK,EP,FALSE,B3,B4,-1*64);
+  INIXTP(DR,'r',DARK,ER,TRUE ,S1,S4,-5*64);
+  INIXTP(DN,'n',DARK,EN,FALSE,N1,N8,-3*64);
+  INIXTP(DB,'b',DARK,EB,TRUE ,B1,B4,-3*64);
+  INIXTP(DQ,'q',DARK,EQ,TRUE ,B1,S4,-9*64);
+  INIXTP(DK,'k',DARK,EK,FALSE,B1,S4,0);
+  INIXTP(MT,'-',NONE,EP,FALSE,B2,B1,0);
 
-  XTGMP[PQ,LITE] := LQ;  XTGMP[PQ,DARK] := DQ;  XTGC[PQ] := "Q";
-  XTGMP[PR,LITE] := LR;  XTGMP[PR,DARK] := DR;  XTGC[PR] := "R";
-  XTGMP[PN,LITE] := LN;  XTGMP[PN,DARK] := DN;  XTGC[PN] := "N";
-  XTGMP[PB,LITE] := LB;  XTGMP[PB,DARK] := DB;  XTGC[PB] := "B";
+  XTGMP[PQ,LITE] := LQ;  XTGMP[PQ,DARK] := DQ;  XTGC[PQ] := 'Q';
+  XTGMP[PR,LITE] := LR;  XTGMP[PR,DARK] := DR;  XTGC[PR] := 'R';
+  XTGMP[PN,LITE] := LN;  XTGMP[PN,DARK] := DN;  XTGC[PN] := 'N';
+  XTGMP[PB,LITE] := LB;  XTGMP[PB,DARK] := DB;  XTGC[PB] := 'B';
 
-  XTUC[EK] := "K";
-  XTUC[EQ] := "Q";
-  XTUC[ER] := "R";
-  XTUC[EN] := "N";
-  XTUC[EB] := "B";
-  XTUC[EP] := "P";
+  XTUC[EK] := 'K';
+  XTUC[EQ] := 'Q';
+  XTUC[ER] := 'R';
+  XTUC[EN] := 'N';
+  XTUC[EB] := 'B';
+  XTUC[EP] := 'P';
 
   (** INITIALIZE OTHER CONSTANTS *)
 
-  XTBC[FALSE] := "-";
-  XTBC[TRUE ] := "*";
-  
+  XTBC[FALSE] := '-';
+  XTBC[TRUE ] := '*';
+
   OTHER[LITE] := DARK;  XTMV[LITE] :=  1;
   OTHER[DARK] := LITE;  XTMV[DARK] := -1;
   OTHER[NONE] := NONE;
 
-  XTMA[LITE] := "    WHITE ";
-  XTMA[DARK] := "    BLACK ";
-  XTMA[NONE] := "   NO ONE ";
-  
-  XTQA[LS] := "WHITE KING";
-  XTQA[LL] := "WHITE LONG";
-  XTQA[DS] := "BLACK KING";
-  XTQA[DL] := "BLACK LONG";
+  XTMA[LITE] := '    WHITE ';
+  XTMA[DARK] := '    BLACK ';
+  XTMA[NONE] := '   NO ONE ';
+
+  XTQA[LS] := 'WHITE KING';
+  XTQA[LL] := 'WHITE LONG';
+  XTQA[DS] := 'BLACK KING';
+  XTQA[DL] := 'BLACK LONG';
 
   (** INITIALIZE 10X12 TO 8X8 AND 8X8 TO 10X12 TRANSLATION TABLES *)
 
@@ -907,15 +911,15 @@ BEGIN  (* INICOM *)
   XRQM[LL].RMFR := XTRFS[R1,F5];  XRQM[LL].RMTO := XTRFS[R1,F3];
   XRQM[DS].RMFR := XTRFS[R8,F5];  XRQM[DS].RMTO := XTRFS[R8,F7];
   XRQM[DL].RMFR := XTRFS[R8,F5];  XRQM[DL].RMTO := XTRFS[R8,F3];
-  
+
   XRQM[LS].RMQS := FALSE;
   XRQM[LL].RMQS := TRUE;
   XRQM[DS].RMQS := FALSE;
   XRQM[DL].RMQS := TRUE;
-  
+
   XTMQ[LITE] := LS;
   XTMQ[DARK] := DS;
-  
+
   XTQS[LS] := XTRFS[R1,F8];
   XTQS[LL] := XTRFS[R1,F1];
   XTQS[DS] := XTRFS[R8,F8];
@@ -947,54 +951,54 @@ BEGIN  (* INICOM *)
   (** INITIALIZE MOVES SYNTAX TABLE *)
 
   INTI := SYNCF;
-  INISYN("    *P    ");
-  INISYN("    *P/  1");
-  INISYN("/  1*P    ");
-  INISYN("    *P/ R ");
-  INISYN("/ R *P    ");
-  INISYN("    *P/ R1");
-  INISYN("/ R1*P    ");
-  INISYN("    *P/KR ");
-  INISYN("/KR *P    ");
-  INISYN("    *P/KR1");
-  INISYN("/KR1*P    ");
-  INISYN("/  1*P/  1");
-  INISYN("/ R *P/ R ");
-  INISYN("/  1*P/ R ");
-  INISYN("/ R *P/  1");
-  INISYN("/ R1*P/  1");
-  INISYN("/  1*P/ R1");
-  INISYN("/ R1*P/ R ");
-  INISYN("/ R *P/ R1");
-  INISYN("/KR *P/  1");
-  INISYN("/  1*P/KR ");
-  INISYN("/KR *P/ R ");
-  INISYN("/ R *P/KR ");
-  INISYN("/  1*P/KR1");
-  INISYN("/KR1*P/  1");
-  INISYN("  R *P/KR1");
-  INISYN("/KR1*P/ R ");
-  INISYN("/ R1*P/ R1");
-  INISYN("/KR *P/ R1");
-  INISYN("/ R1*P/KR ");
-  INISYN("/KR *P/KR ");
-  INISYN("/KR1*P/ R1");
-  INISYN("/ R1*P/KR1");
-  INISYN("/KR1*P/KR ");
-  INISYN("/KR *P/KR1");
-  INISYN("/KR1*P/KR1");
+  INISYN('    *P    ');
+  INISYN('    *P/  1');
+  INISYN('/  1*P    ');
+  INISYN('    *P/ R ');
+  INISYN('/ R *P    ');
+  INISYN('    *P/ R1');
+  INISYN('/ R1*P    ');
+  INISYN('    *P/KR ');
+  INISYN('/KR *P    ');
+  INISYN('    *P/KR1');
+  INISYN('/KR1*P    ');
+  INISYN('/  1*P/  1');
+  INISYN('/ R *P/ R ');
+  INISYN('/  1*P/ R ');
+  INISYN('/ R *P/  1');
+  INISYN('/ R1*P/  1');
+  INISYN('/  1*P/ R1');
+  INISYN('/ R1*P/ R ');
+  INISYN('/ R *P/ R1');
+  INISYN('/KR *P/  1');
+  INISYN('/  1*P/KR ');
+  INISYN('/KR *P/ R ');
+  INISYN('/ R *P/KR ');
+  INISYN('/  1*P/KR1');
+  INISYN('/KR1*P/  1');
+  INISYN('  R *P/KR1');
+  INISYN('/KR1*P/ R ');
+  INISYN('/ R1*P/ R1');
+  INISYN('/KR *P/ R1');
+  INISYN('/ R1*P/KR ');
+  INISYN('/KR *P/KR ');
+  INISYN('/KR1*P/ R1');
+  INISYN('/ R1*P/KR1');
+  INISYN('/KR1*P/KR ');
+  INISYN('/KR *P/KR1');
+  INISYN('/KR1*P/KR1');
 
-  INISYN("    -   R1");
-  INISYN("    -  KR1");
-  INISYN("/  1-   R1");
-  INISYN("/ R -   R1");
-  INISYN("/  1-  KR1");
-  INISYN("/ R -  KR1");
-  INISYN("/ R1-   R1");
-  INISYN("/KR -   R1");
-  INISYN("/ R1-  KR1");
-  INISYN("/KR -  KR1");
-  INISYN("/KR1-  KR1");
+  INISYN('    -   R1');
+  INISYN('    -  KR1');
+  INISYN('/  1-   R1');
+  INISYN('/ R -   R1');
+  INISYN('/  1-  KR1');
+  INISYN('/ R -  KR1');
+  INISYN('/ R1-   R1');
+  INISYN('/KR -   R1');
+  INISYN('/ R1-  KR1');
+  INISYN('/KR -  KR1');
+  INISYN('/KR1-  KR1');
 
   (** INITIALIZE LETS *)
 
@@ -1044,7 +1048,7 @@ END;  (* INICON *)
 
 PROCEDURE INITAL(VAR A:RB);            (* INITIALIZE FOR A NEW GAME *)
 
-VAR 
+VAR
   INTF : TF;                           (* FILE INDEX *)
   INTR : TR;                           (* RANK INDEX *)
 
@@ -1079,7 +1083,7 @@ BEGIN
     RBIRF[R8,F6] := DB;
     RBIRF[R8,F7] := DN;
     RBIRF[R8,F8] := DR;
-    MOVMS := " ENTER MOVE OR TYPE GO.       ";
+    MOVMS := ' ENTER MOVE OR TYPE GO.       ';
     WRITELN(MOVMS);
     LSTMV := NULMV;                    (* INITIALIZE PREVIOUS MOVE *)
   END;
@@ -1091,7 +1095,7 @@ PROCEDURE PAUSER;                      (* PAUSE FOR CARRIAGE RETURN *)
 BEGIN
   IF SWPA THEN
   BEGIN
-    WRITELN(" PAUSING ");
+    WRITELN(' PAUSING ');
     READLN;
   END;
 END;  (* PAUSER *)
@@ -1102,60 +1106,60 @@ PROCEDURE PRIMOV(A:RM);                (* PRINT A MOVE *)
 BEGIN
   WITH A DO
   BEGIN
-    WRITE("   FROM   ",RMFR:2,"   TO   ",RMTO:2);
+    WRITE('   FROM   ',RMFR:2,'   TO   ',RMTO:2);
     IF NULMVB(A) THEN
-      WRITE(",   NULL   MCVE")
+      WRITE(',   NULL   MCVE')
     ELSE
     BEGIN
       IF RMCA THEN
-        WRITE(", CAPTURE ",XTPC[RMCP],",")
+        WRITE(', CAPTURE ',XTPC[RMCP],',')
       ELSE
-        WRITE(", SIMPLE,");
+        WRITE(', SIMPLE,');
       IF NOT RMAC THEN
-        WRITE(" NO");
-      WRITE(" ACS");
+        WRITE(' NO');
+      WRITE(' ACS');
       IF RMCH THEN
-        WRITE(", CHECK");
+        WRITE(', CHECK');
       IF RMMT THEN
-        WRITE(",  MATE");
+        WRITE(',  MATE');
       IF RMIL THEN
-        WRITE(", ILLEGAL");
+        WRITE(', ILLEGAL');
       IF RMSU THEN
-        WRITE(", SEARCHED");
+        WRITE(', SEARCHED');
       CASE RMPR OF
       FALSE:  (* NOT PROMOTION *)
         CASE RMOO OF
         FALSE:  (* NOT CASTLE *)
           IF RMEP THEN
-            WRITE(", ENPASSANT");
+            WRITE(', ENPASSANT');
         TRUE:  (* CASTLE *)
           BEGIN
-            WRITE(", CASTLE ");
+            WRITE(', CASTLE ');
             IF RMQS THEN
-              WRITE("LONG")
-            ELSE WRITE("SHORT");
+              WRITE('LONG')
+            ELSE WRITE('SHORT');
           END;
         END;
       TRUE:  (* PROMOTION *)
         BEGIN
-          WRITE(", PROMOTE TO ");
+          WRITE(', PROMOTE TO ');
           CASE RMPP OF
-          PQ: WRITE("QUEEN");
-          PR: WRITE("ROOK");
-          PB: WRITE("BISHOP");
-          PN: WRITE("KNIGHT");
+          PQ: WRITE('QUEEN');
+          PR: WRITE('ROOK');
+          PB: WRITE('BISHOP');
+          PN: WRITE('KNIGHT');
           END;
         END;
       END;
     END;
   END;
-  WRITELN(".");
+  WRITELN('.');
 END;  (* PRIMOV *)
 
 
 PROCEDURE PRINTB(A:RC);                (* PRINT A BOARD *)
 
-VAR 
+VAR
   INTR : TR;                           (* RANK INDEX *)
   INTF : TF;                           (* FILE INDEX *)
 
@@ -1163,19 +1167,19 @@ BEGIN
   WRITELN;                             (* WRITE A BLANK LINE *)
   FOR INTR := R8 DOWNTO R1 DO          (* LOOP DOWN THROUGH RANKS *)
   BEGIN
-    WRITE(" ",ORD(INTR)+1: 1," ") ;    (* OUTPUT RANK LABEL *)
+    WRITE(' ',ORD(INTR)+1: 1,' ') ;    (* OUTPUT RANK LABEL *)
     FOR INTF := F1 TO F8 DO            (* LOOP ACROSS THROUGH FILES *)
       WRITE(XTPC[A[XTRFS[INTR,INTF]]]);
                                        (* OUTPUT CONTENTS OF SQUARE *)
       WRITELN;                         (* WRITE OUT A RANK *)
     END;
-{  WRITELN(" W RNBQKBNR"); }           (* WRITE OUT BOTTOM LABEL *)
+{  WRITELN(' W RNBQKBNR'); }           (* WRITE OUT BOTTOM LABEL *)
 END;  (* PRINTB *)
 
 
 PROCEDURE PRINBB(A:RS);                (* PRINT A BIT BOARD *)
 
-VAR 
+VAR
   INTR : TR;                           (* RANK INDEX *)
   INTF : TF;                           (* FILE INDEX *)
 
@@ -1183,19 +1187,19 @@ BEGIN
   WRITELN;                             (* WRITE OUT A BLANK LINE *)
   FOR INTR := R8 DOWNTO R1 DO          (* LOOP DOWN THROUGH RANKS *)
   BEGIN
-    WRITE(" ",ORD(INTR)+1: 1," ");     (* OUTPUT RANK LABEL *)
+    WRITE(' ',ORD(INTR)+1: 1,' ');     (* OUTPUT RANK LABEL *)
     FOR INTF := F1 TO F8 DO            (* LOOP ACROSS THROUGH FILES *)
       WRITE(XTBC[INRSTB(A,XTRFS[INTR,INTF])]);
                                        (* OUTPUT CONTENTS OF SQUARE *)
     WRITELN;                           (* WRITE OUT A RANK *)
   END;
-  WRITELN(" W RNBQKBNR");              (* WRITE OUT BOTTOM LABEL *)
+  WRITELN(' W RNBQKBNR');              (* WRITE OUT BOTTOM LABEL *)
 END;  (* PRINBB *)
 
 
 PROCEDURE PRINAM(A:RX);                (* PRINT ATTACK MAP *)
 
-VAR 
+VAR
   INTR, JNTR : TR;                     (* RANK INDICES *)
   INTF, JNTF : TF;                     (* FILE INDICES *)
 
@@ -1207,12 +1211,12 @@ BEGIN
     BEGIN
       FOR INTF := F1 TO F8 DO
       BEGIN
-        WRITE(" ");
+        WRITE(' ');
         FOR JNTF := F1 TO F8 DO
         BEGIN
           WRITE(XTBC[INRSTB(A[XTRFS[INTR,INTF]],XTRFS[JNTR,JNTF])]);
         END;
-        WRITE(" ");
+        WRITE(' ');
       END;
       WRITELN;
     END;
@@ -1225,17 +1229,17 @@ END;  (* PRINAM *)
 PROCEDURE PRISWI(A:RA;B:TB);           (* PRINT A SWITCH *)
 
 BEGIN
-  WRITE(" ",A[AA],A[AA+1]);
+  WRITE(' ',A[AA],A[AA+1]);
   IF B THEN
-    WRITELN(" ON")
+    WRITELN(' ON')
   ELSE
-    WRITELN(" OFF");
+    WRITELN(' OFF');
 END;  (* PRISWI *)
 
 
 PROCEDURE MBEVAL;                      (* EVALUATE MATERIAL BALANCE *)
 
-VAR 
+VAR
   INTI : TI;                           (* COUNT PAWNS OF WINNING SIDE *)
 
 BEGIN
@@ -1311,7 +1315,7 @@ PROCEDURE ADDATK                       (* ADD ATTACKS OF PIECE TO DATA
   (A:TS);                              (* SQUARE OF PIECE TO ADD
                                           ATTACK *)
 
-VAR 
+VAR
   INTB : TB;                           (* LOOP CONTROL BOOLEAN *)
   INTD :  TD;                          (* CURRENT DIRECTION FFSET *)
   INTE : TE;                           (* CURRENT DIRECTION INDEX *)
@@ -1372,7 +1376,7 @@ END;  (* CLSTAT *)
 PROCEDURE CUTATK                       (* CUT ATTACKS THROUGH SQUARE *)
   (A:TS);                              (* SQUARE *)
 
-VAR 
+VAR
   INRS : RS;                           (* ATTACKING PIECES *)
   INTS : TS;                           (* ATTACKING PIECE SQUARE *)
   IMRS : RS;                           (* SCRATCH *)
@@ -1416,7 +1420,7 @@ END;  (* CUTATK *)
 PROCEDURE DELATK                       (* DELETE ATTACKS FROM SQUARE *)
   (A:TS);                              (* SQUARE TO REMOVE PIECE *)
 
-VAR 
+VAR
   INRS : RS;                           (* SQUARES ATTACKED BY PIECE ON
                                           SQUARE *)
   IMRS : RS;                           (* SCRATCH *)
@@ -1451,7 +1455,7 @@ PROCEDURE PRPATK                       (* PROPAGATE ATTACKS THROUGH
                                           SQUARE *)
   (A:TS);                              (* SQUARE *)
 
-VAR 
+VAR
   INRS : RS;                           (* ATTACKING PIECES *)
   INTS : TS;                           (* ATTACKING PIECE SQUARE *)
   INTD : TD;                           (* STEP SIZE *)
@@ -1628,7 +1632,7 @@ END;  (* PROMOT *)
 
 PROCEDURE CREATE;                      (* CREATE GLOBAL DATA BASE *)
 
-VAR 
+VAR
   INRS : RS;                           (* SCRATCH BIT BOARD *)
   INTM : TM;                           (* COLOR INDEX *)
   INTP : TP;                           (* PIECE INDEX *)
@@ -1707,7 +1711,7 @@ PROCEDURE DNDATE                       (* DOWNOATE DATA BASE TO BACK
                                           OUT A MOVE *)
   (A: RM);                             (* THE MOVE TO RETRACT   *)
 
-VAR 
+VAR
   INTS : TS;                            (* SCRATCH *)
   INTR : TR;                            (* ROOK RANK FOR CASTLING *)
   INTF : TF;                            (* ROOK FILE FOR CASTLING *)
@@ -1782,7 +1786,7 @@ FUNCTION UPDATE                        (* UPDATE DATA BASE FOR A MOVE *)
    :TB;                                (* RETURNS TRUE IF MOVE IS
                                           LEGAL *)
 
-VAR 
+VAR
   INRS : RS;                           (* SCRATCH *)
   IMRS : RS;                           (* SCRATCH *)
   INTS : TS;                           (* SCRATCH *)
@@ -1908,7 +1912,7 @@ PROCEDURE GENONE                       (* STACK ONE GENERATED MOVE *)
   (A:TT;                               (* FROM SQUARE *)
    B:TS);                              (* TO SQUARE *)
 
-VAR 
+VAR
   INRS : RS;                           (* SCRATCH *)
 
 BEGIN
@@ -1937,7 +1941,7 @@ END;  (* GENONE *)
 
 PROCEDURE PWNPRO;                      (* GENERATE ALL PROMOTION MOVES *)
 
-VAR 
+VAR
   INTG : TG;                           (* PROMOTION TYPE *)
 
 BEGIN
@@ -1956,7 +1960,7 @@ PROCEDURE GENPWN                       (* GENERATE PAWN MOVES *)
  (A:RS;                                (* PAWNS TO MOVE *)
   B:RS);                               (* VALID DESTINATION SQUARES *)
 
-VAR 
+VAR
   INRS, IMRS : RS;                     (* SCRATCH *)
   INTS : TS;                           (* DESTINATION SQUARE *)
 
@@ -2084,7 +2088,7 @@ PROCEDURE GENFSL                       (* GENERATE ALL MOVES FROM
                                           A SET OF SQUARES *)
   (A:RS);                              (* ORIGIN SET OF SQUARES *)
 
-VAR 
+VAR
   INRS : RS;                           (* OUTER LOOP BIT BOARD *)
   IMRS : RS;                           (* INNER LOOP BIT BOARD *)
   IPRS : RS;                           (* PAWN ORIGIN BIT BOARD *)
@@ -2113,7 +2117,7 @@ PROCEDURE GENTSL                       (* GENERATE ALL MOVES TO A
                                           SET OF SQUARES *)
   (A:RS);                              (* TARGET SET OF SQUARES *)
 
-VAR 
+VAR
   INRS : RS;                           (* OUTER LOOP BIT BOARD *)
   IMRS : RS;                           (* INNER LOOP BIT BOARD *)
   IPRS : RS;                           (* BIT BOARD *)
@@ -2138,7 +2142,7 @@ END;  (* GENTSL *)
 
 PROCEDURE GENCAP;                      (* GENERATE CAPTURE MOVES *)
 
-VAR 
+VAR
   INRS : RS;                           (* DESTINATION SQUARES *)
 
 BEGIN
@@ -2150,7 +2154,7 @@ END;  (* GENCAP *)
 
 PROCEDURE GENCAS;                      (* GENERATE CASTLE MOVES *)
 
-VAR 
+VAR
   INTQ : TQ;                           (* CASTLE TYPE INDEX *)
   INRS : RS;                           (* OCCUPIED SQUARES TEST *)
   IMRS : RS;                           (* ATTACKED SQUARES TEST *)
@@ -2186,7 +2190,7 @@ END;  (* GENALL *)
 
 PROCEDURE LSTMOV;                      (* LIST LEGAL PLAYERS MOVES *)
 
-VAR 
+VAR
   INTW : TW;                           (* MOVES INDEX *)
 
 BEGIN
@@ -2203,7 +2207,7 @@ END;  (* LSTMOV *)
 PROCEDURE THEMOV                       (* MAKE THE MOVE FOR REAL *)
   (A:RM);                              (* THE MOVE TO MAKE *)
 
-VAR 
+VAR
   INTB : TB;                           (* SCRATCH *)
   INRS : RS;                           (* SCRATCH *)
   INTQ : TQ;                           (* CASTLE TYPE INDEX *)
@@ -2236,7 +2240,7 @@ END;  (* THEMOV *)
 
 PROCEDURE EVALU8;                      (* EVALUATE CURRENT POSITION *)
 
-VAR 
+VAR
   INTV : TV;                           (* SCORE *)
 
   FUNCTION EVKING                      (* EVALUATE KING *)
@@ -2360,7 +2364,7 @@ BEGIN
   END;
   IF SWTR THEN
     BEGIN
-      WRITE(" EVALU8",JNTK,JNTW,INDEX[JNTK],INTV);
+      WRITE(' EVALU8',JNTK,JNTW,INDEX[JNTK],INTV);
       PRIMOV(MOVES[INDEX[JNTK]]);
     END;
   VALUE[INDEX[JNTK]] := INTV;          (* RETURN SCORE *)
@@ -2370,7 +2374,7 @@ END;  (* EVALU8 *)
 FUNCTION SEARCH                        (* SEARCH LOOK-AHEAD TREE *)
 : TW;                                  (* RETURNS THE BEST MOVE *)
 
-LABEL 
+LABEL
   11,                                  (* START NEW PLY *)
   12,                                  (* TRY DIFFERENT FIRST MOVE *)
   13, 130,                             (* FLOAT VALUE BACK UP *)
@@ -2408,7 +2412,7 @@ LABEL
   BEGIN
     MINMAX := FALSE;                   (* DEFAULT IS NO PRUNING *)
     IF SWTR THEN
-      WRITE(" MINMAX",A,-BSTVL[A-1],BSTVL[A],-BSTVL[A+1]);
+      WRITE(' MINMAX',A,-BSTVL[A-1],BSTVL[A],-BSTVL[A+1]);
     IF -BSTVL[A+1] > BSTVL[A] THEN
     BEGIN
       BSTVL[A] := -BSTVL[A+1];
@@ -2416,7 +2420,7 @@ LABEL
       MINMAX := BSTVL[A+1] <= BSTVL[A-1];
                                        (* RETURN TRUE IF REFUTATION *)
       IF SWTR THEN
-        WRITE(" NEW BEST. PRUNE: ",BSTVL[A+1] <= BSTVL[A-1]);
+        WRITE(' NEW BEST. PRUNE: ',BSTVL[A+1] <= BSTVL[A-1]);
     END;
     IF SWTR THEN
       WRITELN;                         (* PRINT TRACE LINE *)
@@ -2432,7 +2436,7 @@ LABEL
     ELSE                               (* STALEMATE *)
       VALUE[INDEX[JNTK]] :=  0;
     IF SWTR THEN
-      WRITELN(" SCOREM",JNTK,JNTW, INDEX[JNTK],VALUE[INDEX[JNTK]]);
+      WRITELN(' SCOREM',JNTK,JNTW, INDEX[JNTK],VALUE[INDEX[JNTK]]);
   END;  (* SCOREM *)
 
 
@@ -2460,7 +2464,7 @@ LABEL
     BEGIN
       INTB := FALSE;                   (* RETURN NO MOVE SELECTED *)
       IF SWTR THEN
-        WRITELN(" SELECT", JNTK, " END.");
+        WRITELN(' SELECT', JNTK, ' END.');
       GOTO 22;                         (* EXIT SELECT *)
     END;  (* SELDON *)
 
@@ -2477,7 +2481,7 @@ LABEL
       MOVES[A].RMSU := TRUE;           (* FLAG MOVE AS SEARCHED *)
       IF SWTR THEN
       BEGIN
-        WRITE(" SELECT",JNTK,ORD(SRCHM[JNTK]),A);
+        WRITE(' SELECT',JNTK,ORD(SRCHM[JNTK]),A);
         PRIMOV(MOVES[A]);
       END;
       GOTO 22;                         (* EXIT SELECT *)
@@ -2538,7 +2542,7 @@ LABEL
              IF  SWTR  OR SWPS  THEN
                FOR INTW  :=   AW+1   TO  JNTW-1  DO
                BEGIN
-                 WRITE(" PRELIM",INTW,VALUE[INTW]);
+                 WRITE(' PRELIM',INTW,VALUE[INTW]);
                  PRIMOV(MOVES[INTW]);  (* PRINT PRELIMINARY SCORES *)
                  IF INTW/LPP = INTW DIV LPP THEN
                    PAUSER;
@@ -2642,7 +2646,7 @@ LABEL
                MOVES[INTW].RMSU := FALSE;
                                        (* CLEAR SEARCHED BIT *)
             IF SWTR THEN
-              WRITELN(" REDO ",JNTK,BSTVL[AK-2],BSTVL[AK-1]);
+              WRITELN(' REDO ',JNTK,BSTVL[AK-2],BSTVL[AK-1]);
             SELNXT(H6);                (* SEARCH ALL MOVES *)
            END;
       END;
@@ -2659,7 +2663,7 @@ BEGIN  (* SEARCH *)
   BSTVL[AK-2] := VALUE[AW] - WINDOW;   (* INITIALIZE ALPHA-BETA WINDON *)
   BSTVL[AK-1] := -VALUE[AW] - WINDOW;
   JMTK := AK+1;                        (* INITIALIZE ITERATION NUMBER *)
-130:  
+130:
   WHILE ((NODES < FNODEL) AND (JNTK < MAX(ZK DIV 2, ZK-8))) or fgoto DO
   BEGIN
 
@@ -2731,10 +2735,10 @@ END;  (* SEARCH *)
 
 PROCEDURE READER;                      (* READ INPUT FROM USER *)
 
-LABEL 
+LABEL
   11;                                  (* COMMAND FINISHED EXIT *)
 
-VAR 
+VAR
   INRA : RA;                           (* SCRATCH TOKEN *)
   INTJ : TJ;                           (* ECHO COMMAND INDEX *)
 
@@ -2748,14 +2752,14 @@ VAR
     IF NOT SWEC THEN                   (* ECHO LINE IF NOT ALREADY
                                            DONE *)
     BEGIN
-      WRITE(" ");
+      WRITE(' ');
       FOR INTJ := AJ TO ZJ-1 DO
         WRITE(ILINE[INTJ]);            (* WRITE INPUT LINE *)
-      WRITELN(" ");
+      WRITELN(' ');
     END;
     FOR INTJ := AJ TO JNTJ DO
-      WRITE(" ");                      (* LEADING BLANKS BEFORE ARROW *)
-    WRITELN("^");                      (* POINTER TO ERROR *)
+      WRITE(' ');                      (* LEADING BLANKS BEFORE ARROW *)
+    WRITELN('^');                      (* POINTER TO ERROR *)
     FOR INTN := AN TO ZN DO
       WRITE(A[INTN]);                  (* WRITE DIAGNOSTIC *)
     WRITELN;
@@ -2777,18 +2781,18 @@ VAR
     INTJ : TJ;                         (* STRING INDEX *)
 
   BEGIN
-    WHILE (JNTJ < ZJ) AND (ORD(ILINE[JNTJ]) >= ORD("+")) DO
+    WHILE (JNTJ < ZJ) AND (ORD(ILINE[JNTJ]) >= ORD('+')) DO
       JNTJ := JNTJ+1;
-    A := "          ";
+    A := '          ';
     INTJ := AA;
-    WHILE (JNTJ < ZJ) AND (INTJ < ZA) AND (ILINE[JNTJ] IN ["A".."Z","0".."9"]) DO
+    WHILE (JNTJ < ZJ) AND (INTJ < ZA) AND (ILINE[JNTJ] IN ['A'..'Z','0'..'9']) DO
     BEGIN
       A[INTJ] := ILINE[JNTJ];          (* COPY CHARACTER TO TOKEN *)
       INTJ := INTJ+1;                  (* ADVANCE POINTERS *)
       JNTJ := JNTJ+1;
     END;
     RDRGNT := INTJ <> AA;              (* RETURN TRUE IF ANYTHING MOVED *)
-    WHILE (INTJ < ZJ) AND (JNTJ < ZJ) AND (ILINE[JNTJ] IN ["A".."Z","0".."9"]) DO
+    WHILE (INTJ < ZJ) AND (JNTJ < ZJ) AND (ILINE[JNTJ] IN ['A'..'Z','0'..'9']) DO
       JNTJ := JNTJ+1;                  (* SKIP REST OF TOKEN *)
   END;  (* RDRGNT *)
 
@@ -2840,10 +2844,10 @@ VAR
       READ(INTC);                      (* SKIP REST OF INPUT LINE *)
     WHILE INTJ < ZJ DO
     BEGIN
-      ICARD[INTJ] := " ";              (* BLANK REST OF LINE *)
+      ICARD[INTJ] := ' ';              (* BLANK REST OF LINE *)
       INTJ := INTJ+1;
     END;
-    ICARD[ZJ] := ";";                  (* SET END OF COMMAND *)
+    ICARD[ZJ] := ';';                  (* SET END OF COMMAND *)
     JMTJ := AJ;                        (* RESET INPUT LINE POINTER *)
   END;  (* RDLINE *)
 
@@ -2857,24 +2861,24 @@ VAR
     IMTJ : TJ;                         (* STORING POINTER *)
 
   BEGIN
-    WHILE (JMTJ < ZJ) AND (ICARD[JMTJ] = " ") DO
+    WHILE (JMTJ < ZJ) AND (ICARD[JMTJ] = ' ') DO
       JMTJ := JMTJ+1;                  (* SKIP LEADING BLANKS *)
     IMTJ := AJ;
-    WHILE (JMTJ < ZJ) AND (ICARD[JMTJ] <> ";") DO
+    WHILE (JMTJ < ZJ) AND (ICARD[JMTJ] <> ';') DO
     BEGIN
       ILINE[IMTJ] := ICARD[JMTJ];
       IMTJ := IMTJ+1;
       JMTJ := JMTJ+1;
     END;
-    IF (ICARD[JMTJ] = ";") AND (JMTJ <  ZJ) THEN
+    IF (ICARD[JMTJ] = ';') AND (JMTJ <  ZJ) THEN
       JMTJ := JMTJ+1;                  (* SKIP SEMI-COLON *)
     RDRMOV := IMTJ <>  AJ;             (* RETURN TRUE IF NON-EMPTY *)
     WHILE   IMTJ   <   ZJ   DO
     BEGIN
-      ILINE[IMTJ] := " ";              (* BLANK FILL LINE *)
+      ILINE[IMTJ] := ' ';              (* BLANK FILL LINE *)
       IMTJ := IMTJ+1;
     END;
-    ILINE[ZJ] := ";";                  (* STORE COMMAND TERMINATOR *)
+    ILINE[ZJ] := ';';                  (* STORE COMMAND TERMINATOR *)
     JNTJ := AJ;                        (* PRESET COMNAND SCAN *)
   END;  (* RDRMOV *)
 
@@ -2889,9 +2893,9 @@ VAR
     INTI : TI;                         (* VALUE *)
 
   BEGIN
-    WHILE (JNTJ < ZJ) AND (ILINE[JNTJ] = " ") DO
+    WHILE (JNTJ < ZJ) AND (ILINE[JNTJ] = ' ') DO
       JNTJ := JNTJ+1;                  (* SKIP LEADING BLANKS *)
-    IF ILINE[JNTJ] = "-" THEN
+    IF ILINE[JNTJ] = '-' THEN
     BEGIN
       INTB := TRUE;                    (* NUMBER IS NEGATIVE *)
       JNTJ := JNTJ+1;                  (* ADVANCE CHARACTER POINTER *)
@@ -2899,20 +2903,20 @@ VAR
     ELSE
     BEGIN
       INTB := FALSE;                   (* NUMBER IS POSITIVE *)
-      IF ILINE[JNTJ] = "+" THEN
+      IF ILINE[JNTJ] = '+' THEN
         JNTJ := JNTJ+1;                (* SKIP LEADING + *)
     END;
     INTI := 0;
-    WHILE ILINE[JNTJ] IN ["0".."9"] DO
+    WHILE ILINE[JNTJ] IN ['0'..'9'] DO
     BEGIN
       IF INTI < MAXINT/10 THEN
-        INTI := 10*INTI+ORD(ILINE[JNTJ])-ORD("0")
+        INTI := 10*INTI+ORD(ILINE[JNTJ])-ORD('0')
       ELSE
-        RDRERR(" NUMBER TOO LARGE             ");
+        RDRERR(' NUMBER TOO LARGE             ');
       JNTJ := JNTJ+1;                  (* ADVANCE *)
     END;
-    IF ILINE[JNTJ] IN ["A".."Z"] THEN
-      RDRERR(" DIGIT EXPECTED               ");
+    IF ILINE[JNTJ] IN ['A'..'Z'] THEN
+      RDRERR(' DIGIT EXPECTED               ');
     IF INTB THEN
       INTI := -INTI;                   (* COMPLEMENT IF NEGATIVE *)
     RDRNUM := INTI;                    (* RETURN NUMBER *)
@@ -2950,25 +2954,25 @@ VAR
     INTM := LITE;
     INTS := 0;
     REPEAT
-      IF ILINE[JNTJ] IN ["P","R","N","B","Q","K","L","D","1".."8"] THEN
+      IF ILINE[JNTJ] IN ['P','R','N','B','Q','K','L','D','1'..'8'] THEN
       CASE ILINE[JNTJ] OF
-        "P": BOASTO(XTUMP[EP,INTM]);
-        "R": BOASTO(XTUMP[ER,INTM]);
-        "N": BOASTO(XTUMP[EN,INTM]);
-        "B": BOASTO(XTUMP[EB,INTM]);
-        "Q": BOASTO(XTUMP[EQ,INTM]);
-        "K": BOASTO(XTUMP[EK,INTM]);
-        "L": INTM := LITE;
-        "D": INTM := DARK;
-        "1","2","3","4","5","6","7","8": BOAADV(ORD(ILINE[JNTJ])-ORD("0"));
+        'P': BOASTO(XTUMP[EP,INTM]);
+        'R': BOASTO(XTUMP[ER,INTM]);
+        'N': BOASTO(XTUMP[EN,INTM]);
+        'B': BOASTO(XTUMP[EB,INTM]);
+        'Q': BOASTO(XTUMP[EQ,INTM]);
+        'K': BOASTO(XTUMP[EK,INTM]);
+        'L': INTM := LITE;
+        'D': INTM := DARK;
+        '1','2','3','4','5','6','7','8': BOAADV(ORD(ILINE[JNTJ])-ORD('0'));
       END
       ELSE
-       IF ILINE[JNTJ] IN ["A".."Z","0".."9"] THEN
+       IF ILINE[JNTJ] IN ['A'..'Z','0'..'9'] THEN
        BEGIN
          FOR INTS := AS TO ZS DO
            BOARD.RBIS[INTS] := MT;
          CLSTAT;                       (* CLEAR STATUS *)
-         RDRERR(" ILLEGAL BOARD OPTION         ");
+         RDRERR(' ILLEGAL BOARD OPTION         ');
        END;
        JNTJ := JNTJ+1;
     UNTIL JNTJ = ZJ;
@@ -3019,34 +3023,34 @@ VAR
   BEGIN
     IF RDRGNT(INRA) THEN
     BEGIN
-      LETONE("FKPSHD         ",FKPSHD);
-      LETONE("FKSANQ         ",FKSANQ);
-      LETONE("FMAXMT         ",FMAXMT);
-      LETONE("FNODEL         ",FNODEL);
-      LETONE("FPADQR         ",FPADCR[F1]);
-      LETONE("FPADQN         ",FPADCR[F2]);
-      LETONE("FPADQB         ",FPADCR[F3]);
-      LETONE("FPADQF         ",FPADCR[F4]);
-      LETONE("FPADKF         ",FPADCR[F5]);
-      LETONE("FPADKB         ",FPADCR[F6]);
-      LETONE("FPADKN         ",FPADCR[F7]);
-      LETONE("FPADWR         ",FPADCR[F8]);
-      LETONE("FPBLOK         ",FPBLOK);
-      LETONE("FPCONN         ",FPCONN);
-      LETONE("FPFLNX         ",FPFLNX);
-      LETONE("FRDUBL         ",FRDUBL);
-      LETONE("FRK7TH         ",FRK7TH);
-      LETONE("FTRADE         ",FTRADE);
-      LETONE("FTRDSL         ",FTRDSL);
-      LETONE("FTRPDK         ",FTRPDK);
-      LETONE("FTRPWN         ",FTRPWN);
-      LETONE("FWKING         ",FWKING);
-      LETONE("FWMAJM         ",FWMAJM);
-      LETONE("FWMINM         ",FWMINM);
-      LETONE("FWPAWN         ",FWPAWN);
-      LETONE("FWROOK         ",FWROOK);
-      LETONE("WINDOW         ",WINDOW);
-      RDRERR("ILLEGAL LET VARIABLE NAME     ");
+      LETONE('FKPSHD         ',FKPSHD);
+      LETONE('FKSANQ         ',FKSANQ);
+      LETONE('FMAXMT         ',FMAXMT);
+      LETONE('FNODEL         ',FNODEL);
+      LETONE('FPADQR         ',FPADCR[F1]);
+      LETONE('FPADQN         ',FPADCR[F2]);
+      LETONE('FPADQB         ',FPADCR[F3]);
+      LETONE('FPADQF         ',FPADCR[F4]);
+      LETONE('FPADKF         ',FPADCR[F5]);
+      LETONE('FPADKB         ',FPADCR[F6]);
+      LETONE('FPADKN         ',FPADCR[F7]);
+      LETONE('FPADWR         ',FPADCR[F8]);
+      LETONE('FPBLOK         ',FPBLOK);
+      LETONE('FPCONN         ',FPCONN);
+      LETONE('FPFLNX         ',FPFLNX);
+      LETONE('FRDUBL         ',FRDUBL);
+      LETONE('FRK7TH         ',FRK7TH);
+      LETONE('FTRADE         ',FTRADE);
+      LETONE('FTRDSL         ',FTRDSL);
+      LETONE('FTRPDK         ',FTRPDK);
+      LETONE('FTRPWN         ',FTRPWN);
+      LETONE('FWKING         ',FWKING);
+      LETONE('FWMAJM         ',FWMAJM);
+      LETONE('FWMINM         ',FWMINM);
+      LETONE('FWPAWN         ',FWPAWN);
+      LETONE('FWROOK         ',FWROOK);
+      LETONE('WINDOW         ',WINDOW);
+      RDRERR('ILLEGAL LET VARIABLE NAME     ');
     END;
   21:  (* LET COMMAND EXIT  *)
   END;  (* LETCMD *)
@@ -3075,34 +3079,34 @@ VAR
     WHILE RDRGNT(INRA) OR fgoto DO
     BEGIN
       if fgoto then begin fgoto := false; goto 21; end;
-      PRIONE("FKPSHD        ",FKPSHD);
-      PRIONE("FKSANQ        ",FKSANQ);
-      PRIONE("FMAXMT        ",FMAXMT);
-      PRIONE("FNODEL        ",FNODEL);
-      PRIONE("FPADQR        ",FPADCR[F1]);
-      PRIONE("FPADQN        ",FPADCR[F2]);
-      PRIONE("FPADQB        ",FPADCR[F3]);
-      PRIONE("FPADQF        ",FPADCR[F4]);
-      PRIONE("FPADKF        ",FPADCR[F5]);
-      PRIONE("FPADKB        ",FPADCR[F6]);
-      PRIONE("FPADKN        ",FPADCR[F7]);
-      PRIONE("FPADKR        ",FPADCR[F8]);
-      PRIONE("FPBLOK        ",FPBLOK);
-      PRIONE("FPCONN        ",FPCONN);
-      PRIONE("FPFLNX        ",FPFLNX);
-      PRIONE("FRDUBL        ",FRDUBL);
-      PRIONE("FRK7TH        ",FRK7TH);
-      PRIONE("FTRADE        ",FTRADE);
-      PRIONE("FTRDSL        ",FTRDSL);
-      PRIONE("FTRPDK        ",FTRPDK);
-      PRIONE("FTRPWN        ",FTRPWN);
-      PRIONE("FWKING        ",FWKING);
-      PRIONE("FWMAJM        ",FWMAJM);
-      PRIONE("FWMINM        ",FWMINM);
-      PRIONE("FWPAWN        ",FWPAWN);
-      PRIONE("FWROOK        ",FWROOK);
-      PRIONE("WINDOW        ",WINDOW);
-      RDRERR(" ILLEGAL  VARIABLE NAME       ");
+      PRIONE('FKPSHD        ',FKPSHD);
+      PRIONE('FKSANQ        ',FKSANQ);
+      PRIONE('FMAXMT        ',FMAXMT);
+      PRIONE('FNODEL        ',FNODEL);
+      PRIONE('FPADQR        ',FPADCR[F1]);
+      PRIONE('FPADQN        ',FPADCR[F2]);
+      PRIONE('FPADQB        ',FPADCR[F3]);
+      PRIONE('FPADQF        ',FPADCR[F4]);
+      PRIONE('FPADKF        ',FPADCR[F5]);
+      PRIONE('FPADKB        ',FPADCR[F6]);
+      PRIONE('FPADKN        ',FPADCR[F7]);
+      PRIONE('FPADKR        ',FPADCR[F8]);
+      PRIONE('FPBLOK        ',FPBLOK);
+      PRIONE('FPCONN        ',FPCONN);
+      PRIONE('FPFLNX        ',FPFLNX);
+      PRIONE('FRDUBL        ',FRDUBL);
+      PRIONE('FRK7TH        ',FRK7TH);
+      PRIONE('FTRADE        ',FTRADE);
+      PRIONE('FTRDSL        ',FTRDSL);
+      PRIONE('FTRPDK        ',FTRPDK);
+      PRIONE('FTRPWN        ',FTRPWN);
+      PRIONE('FWKING        ',FWKING);
+      PRIONE('FWMAJM        ',FWMAJM);
+      PRIONE('FWMINM        ',FWMINM);
+      PRIONE('FWPAWN        ',FWPAWN);
+      PRIONE('FWROOK        ',FWROOK);
+      PRIONE('WINDOW        ',WINDOW);
+      RDRERR(' ILLEGAL  VARIABLE NAME       ');
 
   21: (* PRINT LET CCNMAND EXIT *)
       END;
@@ -3123,13 +3127,13 @@ VAR
 
   BEGIN
     WHILE RDRGNT(INRA) DO
-      IF INRA[AA] = "T" THEN
+      IF INRA[AA] = 'T' THEN
         PRINAM(ATKTO)
       ELSE
-        IF INRA[AA] = "F" THEN
+        IF INRA[AA] = 'F' THEN
           PRINAM(ATKFR)
         ELSE
-          RDRERR(" ATTACK MAP NOT TO OR FROM    ");
+          RDRERR(' ATTACK MAP NOT TO OR FROM    ');
   END;  (* PAMCMD *)
 
 
@@ -3141,12 +3145,12 @@ VAR
   BEGIN
     WITH BOARD DO
     BEGIN
-      WRITELN(XTMA[RBTM]," TO MOVE.");
-      WRITELN(RBTS," ENPASSANT.");
-      WRITELN("MOVE NUMBER ",RBTI);
+      WRITELN(XTMA[RBTM],' TO MOVE.');
+      WRITELN(RBTS,' ENPASSANT.');
+      WRITELN('MOVE NUMBER ',RBTI);
       FOR  INTQ := LS  TO DL DO
         IF   INTQ IN RBSQ   THEN
-          WRITELN(XTQA[INTQ]," SIDE CASTLE LEGAL.");
+          WRITELN(XTQA[INTQ],' SIDE CASTLE LEGAL.');
     END;
   END;  (* POPCMD *)
 
@@ -3160,7 +3164,7 @@ VAR
     LSTMOV;                            (* LIST LEGAL MOVES *)
     FOR INTW := AW TO JNTW-1 DO
     BEGIN
-      WRITE(INTW:4,"   ");
+      WRITE(INTW:4,'   ');
       PRIMOV(MOVES[INTW]);
       IF INTW/LPP = INTW DIV LPP THEN
         PAUSER;
@@ -3186,10 +3190,10 @@ VAR
         IMTJ := JNTJ;                  (* SAVE CURRENT POSITION *)
         IF RDRGNT(INRA) THEN
         BEGIN
-          IF INRA = "ON        " THEN
+          IF INRA = 'ON        ' THEN
             B := TRUE                  (* TURN SWITCH ON *)
           ELSE
-            IF INRA = "OFF       " THEN
+            IF INRA = 'OFF       ' THEN
               B := FALSE               (* TURN SWITCH OFF *)
             ELSE
               JNTJ := IMTJ;            (* RESTORE CURRENT POSITION *)
@@ -3208,13 +3212,13 @@ VAR
   21:  (* SWITCH OPTION EXIT *)
     WHILE RDRGNT(INRA) DO
     BEGIN
-      SWIONE("EC                 ",SWEC);
-      SWIONE("PA                 ",SWPA);
-      SWIONE("PS                 ",SWPS);
-      SWIONE("RE                 ",SWRE);
-      SWIONE("SU                 ",SWSU);
-      SWIONE("TR                 ",SWTR);
-      RDRERR(" INVALID SWITCH OPTION        ");
+      SWIONE('EC                 ',SWEC);
+      SWIONE('PA                 ',SWPA);
+      SWIONE('PS                 ',SWPS);
+      SWIONE('RE                 ',SWRE);
+      SWIONE('SU                 ',SWSU);
+      SWIONE('TR                 ',SWTR);
+      RDRERR(' INVALID SWITCH OPTION        ');
     END;
   END;  (* SWICMD *)
 
@@ -3277,18 +3281,18 @@ VAR
       IF NOT RDRGNT(INRA) THEN
       BEGIN
         CLSTAT;                        (* CLEAR STATUS *)
-        RDRERR(" ENPASSANT FILE OMITTED       ");
+        RDRERR(' ENPASSANT FILE OMITTED       ');
       END;
-      STAEPF("QR               ",F1);
-      STAEPF("QN               ",F2);
-      STAEPF("QB               ",F3);
-      STAEPF("Q                ",F4);
-      STAEPF("K                ",F5);
-      STAEPF("KB               ",F6);
-      STAEPF("KN               ",F7);
-      STAEPF("KR               ",F8);
+      STAEPF('QR               ',F1);
+      STAEPF('QN               ',F2);
+      STAEPF('QB               ',F3);
+      STAEPF('Q                ',F4);
+      STAEPF('K                ',F5);
+      STAEPF('KB               ',F6);
+      STAEPF('KN               ',F7);
+      STAEPF('KR               ',F8);
       CLSTAT;                          (* CLEAR STATUS *)
-      RDRERR(" ILLEGAL ENPASSANT FILE       ");
+      RDRERR(' ILLEGAL ENPASSANT FILE       ');
     END;  (* STAENP *)
 
 
@@ -3333,15 +3337,15 @@ VAR
 21: (* STATUS OPTION EXIT *)
     WHILE RDRGNT(INRA) DO
     BEGIN
-      STAOPT("D         ",STADRK);
-      STAOPT("EP        ",STAENP);
-      STAOPT("G         ",STAGOS);
-      STAOPT("L         ",STALIT);
-      STAOPT("N         ",STANUM);
-      STAOPT("OO        ",STACAK);
-      STAOPT("OOO       ",STACAQ);
+      STAOPT('D         ',STADRK);
+      STAOPT('EP        ',STAENP);
+      STAOPT('G         ',STAGOS);
+      STAOPT('L         ',STALIT);
+      STAOPT('N         ',STANUM);
+      STAOPT('OO        ',STACAK);
+      STAOPT('OOO       ',STACAQ);
       CLSTAT;
-      RDRERR(" INVALID STATUS OPTION        ");
+      RDRERR(' INVALID STATUS OPTION        ');
     END;
   END;  (* STACMD *)
 
@@ -3359,31 +3363,31 @@ BEGIN  (* READER *)
     RDLINE;
   IF SWEC THEN
   BEGIN                                (* ECHO LINE *)
-    WRITE(" ");
+    WRITE(' ');
     FOR INTJ := AJ TO ZJ-1 DO
       WRITE(ILINE[INTJ]);
-    WRITELN(" ");
+    WRITELN(' ');
     END;
-  IF ILINE[AJ+1] IN  ["A".."W","Y","Z"] THEN
+  IF ILINE[AJ+1] IN  ['A'..'W','Y','Z'] THEN
   BEGIN
-    INRA :=  "          ";             (* EXTRACT KEYWORD *)
+    INRA :=  '          ';             (* EXTRACT KEYWORD *)
     INRA[AA] := ILINE[AJ];
     INRA[AA+1] := ILINE[AJ+1];
     RDRSFT;                            (* SKIP FIRST TOKEN *)
-    RDRCMD("BO        ",BOACMD);
-    RDRCMD("EN        ",ENDCMD);
-    RDRCMD("GO        ",GONCMD);
-    RDRCMD("IN        ",INICMD);
-    RDRCMD("LE        ",LETCMD);
-    RDRCMD("PB        ",PAMCMD);
-    RDRCMD("PO        ",POPCMD);
-    RDRCMD("PL        ",PLECMD);
-    RDRCMD("PM        ",PMVCMD);
-    RDRCMD("PR        ",PRICMD);
-    RDRCMD("ST        ",STACMD);
-    RDRCMD("SW        ",SWICMD);
-    RDRCMD("WH        ",WHACMD);
-    RDRERR("* INVALID COMMAND             ");
+    RDRCMD('BO        ',BOACMD);
+    RDRCMD('EN        ',ENDCMD);
+    RDRCMD('GO        ',GONCMD);
+    RDRCMD('IN        ',INICMD);
+    RDRCMD('LE        ',LETCMD);
+    RDRCMD('PB        ',PAMCMD);
+    RDRCMD('PO        ',POPCMD);
+    RDRCMD('PL        ',PLECMD);
+    RDRCMD('PM        ',PMVCMD);
+    RDRCMD('PR        ',PRICMD);
+    RDRCMD('ST        ',STACMD);
+    RDRCMD('SW        ',SWICMD);
+    RDRCMD('WH        ',WHACMD);
+    RDRERR('* INVALID COMMAND             ');
   END;
 END;  (* READER *)
 
@@ -3393,7 +3397,7 @@ PROCEDURE MINENG                       (* GENERATE MINIMUM
   (A:RM;                               (* MOVE TO NOTATE *)
    B:RA);                              (* LEADING COMMENT *)
 
-VAR 
+VAR
  INTN : TN;                            (* MESSAGE INDEX *)
 
   PROCEDURE ADDCHR                     (* ADD CHARACTER TO MESSAGE *)
@@ -3416,41 +3420,41 @@ VAR
       IF RDPC THEN
         ADDCHR(XTUC[XTPU[MBORD[A]]]);
       IF RDSL THEN
-        ADDCHR("/");
+        ADDCHR('/');
       IF RDKQ THEN
         IF XTSF[A] IN [F1..F4] THEN
-          ADDCHR("Q")
-        ELSE ADDCHR("K");
+          ADDCHR('Q')
+        ELSE ADDCHR('K');
       IF RDNB THEN
         CASE XTSF[A] OF
-          F1,F8: ADDCHR("R");
-          F2,F7: ADDCHR("N");
-          F3,F6: ADDCHR("B");
-          F4   : ADDCHR("Q");
-          F5   : ADDCHR("K");
+          F1,F8: ADDCHR('R');
+          F2,F7: ADDCHR('N');
+          F3,F6: ADDCHR('B');
+          F4   : ADDCHR('Q');
+          F5   : ADDCHR('K');
         END;
       IF RDRK THEN
         IF JNTM = LITE THEN
           CASE XTSR[A] OF
-            R1: ADDCHR("1");
-            R2: ADDCHR("2");
-            R3: ADDCHR("3");
-            R4: ADDCHR("4");
-            R5: ADDCHR("5");
-            R6: ADDCHR("6");
-            R7: ADDCHR("7");
-            R8: ADDCHR("8");
+            R1: ADDCHR('1');
+            R2: ADDCHR('2');
+            R3: ADDCHR('3');
+            R4: ADDCHR('4');
+            R5: ADDCHR('5');
+            R6: ADDCHR('6');
+            R7: ADDCHR('7');
+            R8: ADDCHR('8');
           END
         ELSE
           CASE XTSR[A] OF
-            R1: ADDCHR("8");
-            R2: ADDCHR("7");
-            R3: ADDCHR("6");
-            R4: ADDCHR("5");
-            R5: ADDCHR("4");
-            R6: ADDCHR("3");
-            R7: ADDCHR("2");
-            R8: ADDCHR("1");
+            R1: ADDCHR('8');
+            R2: ADDCHR('7');
+            R3: ADDCHR('6');
+            R4: ADDCHR('5');
+            R5: ADDCHR('4');
+            R6: ADDCHR('3');
+            R7: ADDCHR('2');
+            R8: ADDCHR('1');
           END;
     END;
   END;  (* ADSQR *)
@@ -3575,18 +3579,18 @@ VAR
   END;  (* MINGEN *)
 
 BEGIN  (* MINENG *)
-  MOVMS := "                              ";
+  MOVMS := '                              ';
                                        (* CLEAR MESSAGE *)
   INTN := AN+1;                        (* INITIALIZE MESSAGE INDEX *)
   ADDWRD(B,ZA);                        (* ADD INITIAL COMMENT *)
-  ADDWRD("-         ",2);
+  ADDWRD('-         ',2);
   WITH A DO
   BEGIN
     IF RMOO THEN                       (* CASTLE *)
        BEGIN
-       ADDWRD("O-O      ",3);
+       ADDWRD('O-O      ',3);
        IF RMQS THEN
-          ADDWRD("-O       ",2);
+          ADDWRD('-O       ',2);
        END
     ELSE                               (* NOT CASTLE *)
       IF RMCA THEN                     (* CAPTURE *)
@@ -3595,27 +3599,27 @@ BEGIN  (* MINENG *)
         MINGEN(A,SYNMF,SYNML);
     IF RMPR THEN                       (* PROMOTION *)
     BEGIN
-      ADDCHR("=");
+      ADDCHR('=');
       ADDCHR(XTGC[RMPP]);
     END;
-    ADDWRD(".                   ",3);
+    ADDWRD('.                   ',3);
     IF RMCH THEN                       (* CHECK *)
     BEGIN
-      ADDWRD("CHECK    ",5);
+      ADDWRD('CHECK    ',5);
       IF RMMT THEN                     (* CHECKMATE *)
-        ADDWRD("MATE     ",4);
-      ADDCHR(".");
+        ADDWRD('MATE     ',4);
+      ADDCHR('.');
     END
     ELSE
       IF RMMT THEN                     (* STALEMATE *)
-        ADDWRD("STALEMATE.",10);
+        ADDWRD('STALEMATE.',10);
   END;
 END;  (* MINENG *)
 
 
 PROCEDURE MYMOVE;                      (* MAKE MACHINES MOVE *)
 
-VAR 
+VAR
   INRM : RM;                           (* THE MOVE *)
 
 BEGIN
@@ -3625,30 +3629,30 @@ BEGIN
   BEGIN                                (* NO MOVE FOUND *)
     GOING := 0;
     IF LSTMV.RMCH THEN                 (* CHECKMATE *)
-      WRITELN(" CONGRATULATIONS.")
+      WRITELN(' CONGRATULATIONS.')
     ELSE                               (* STALEMATE *)
-      WRITELN(" DRAWN. ");
+      WRITELN(' DRAWN. ');
   END
   ELSE
   BEGIN
-    MINENG(INRM,"  MY MOVE ");         (* TRANSLATE MOVE TO ENGLISH *)
+    MINENG(INRM,'  MY MOVE ');         (* TRANSLATE MOVE TO ENGLISH *)
     WRITELN(MOVMS);                    (* TELL THE PLAYER *)
     THEMOV(INRM);                      (* MAKE THE MOVE *)
     IF SWSU THEN
-      WRITELN(BOARD.RBTI,".",NODES," NODES,", BSTVL[AK]);
+      WRITELN(BOARD.RBTI,'.',NODES,' NODES,', BSTVL[AK]);
   END;
 END;  (* MYMOVE *)
 
 
 PROCEDURE YRMOVE;                      (* MAKE PLAYERS MOVE *)
 
-LABEL 
+LABEL
   11, 12, 13, 14, 15, 150,             (* SYNTAX NODES *)
   16,                                  (* SYNTAX ERROR *)
   17, 170,                             (* AMBIGUOUS MOVE *)
   18;                                  (* NORMAL EXIT *)
 
-VAR 
+VAR
   INTB : TB;                           (* VALID MOVE FOUND *)
   INTC : TC;                           (* CURRENT CHARACTER *)
   INTW : TJ;                           (* MOVES INDEX *)
@@ -3678,8 +3682,8 @@ VAR
 
   BEGIN
     IF IFMV THEN begin                 (* SECOND POSSIBLE MOVE *)
-      fgoto17 := true; GOTO 170; 
-    end;             
+      fgoto17 := true; GOTO 170;
+    end;
     IFMV := TRUE;                      (* FIRT POSSIBLE MOVE *)
     INRM := MOVES[INTW];               (* SAVE MOVE *)
   END;  (* YRMHIT *)
@@ -3727,11 +3731,11 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "P": INCP := XTUMP[EP,OTHER[JNTM]];
-     "R": INCP := XTUMP[ER,OTHER[JNTM]];
-     "N": INCP := XTUMP[EN,OTHER[JNTM]];
-     "B": INCP := XTUMP[EB,OTHER[JNTM]];
-     "Q": INCP := XTUMP[EQ,OTHER[JNTM]];
+     'P': INCP := XTUMP[EP,OTHER[JNTM]];
+     'R': INCP := XTUMP[ER,OTHER[JNTM]];
+     'N': INCP := XTUMP[EN,OTHER[JNTM]];
+     'B': INCP := XTUMP[EB,OTHER[JNTM]];
+     'Q': INCP := XTUMP[EQ,OTHER[JNTM]];
     END;
   END;  (* YRMCPC *)
 
@@ -3747,8 +3751,8 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "K": INLF := [F5..F8] * INLF;     (* KING SIDE *)
-     "Q": INLF := [F1..F4] * INLF;     (* QUEEN SIDE *)
+     'K': INLF := [F5..F8] * INLF;     (* KING SIDE *)
+     'Q': INLF := [F1..F4] * INLF;     (* QUEEN SIDE *)
     END;
     IFLF := TRUE;
   END;  (* YRMLKQ *)
@@ -3758,9 +3762,9 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "R": INLF := [F1,F8] * INLF;      (* ROOK FILE *)
-     "N": INLF := [F2,F7] * INLF;      (* KNIGHT FILE *)
-     "B": INLF := [F3,F6] * INLF;      (* BISHOP FILE *)
+     'R': INLF := [F1,F8] * INLF;      (* ROOK FILE *)
+     'N': INLF := [F2,F7] * INLF;      (* KNIGHT FILE *)
+     'B': INLF := [F3,F6] * INLF;      (* BISHOP FILE *)
     END;
     IFLD := TRUE;
   END;  (* YRMLRB *)
@@ -3771,25 +3775,25 @@ VAR
   BEGIN
     IF JNTM = LITE THEN
       CASE INTC OF
-       "1": INLR := [R1];
-       "2": INLR := [R2];
-       "3": INLR := [R3];
-       "4": INLR := [R4];
-       "5": INLR := [R5];
-       "6": INLR := [R6];
-       "7": INLR := [R7];
-       "8": INLR := [R8];
+       '1': INLR := [R1];
+       '2': INLR := [R2];
+       '3': INLR := [R3];
+       '4': INLR := [R4];
+       '5': INLR := [R5];
+       '6': INLR := [R6];
+       '7': INLR := [R7];
+       '8': INLR := [R8];
       END
     ELSE
       CASE INTC OF
-       "1": INLR := [R8];
-       "2": INLR := [R7];
-       "3": INLR := [R6];
-       "4": INLR := [R5];
-       "5": INLR := [R4];
-       "6": INLR := [R3];
-       "7": INLR := [R2];
-       "8": INLR := [R1];
+       '1': INLR := [R8];
+       '2': INLR := [R7];
+       '3': INLR := [R6];
+       '4': INLR := [R5];
+       '5': INLR := [R4];
+       '6': INLR := [R3];
+       '7': INLR := [R2];
+       '8': INLR := [R1];
      END;
   END;  (* YRMLRK *)
 
@@ -3804,12 +3808,12 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "P": INTP := XTUMP[EP,JNTM];      (* PAWN *)
-     "R": INTP := XTUMP[ER,JNTM];      (* ROOK *)
-     "N": INTP := XTUMP[EN,JNTM];      (* KNIGNT *)
-     "B": INTP := XTUMP[EB,JNTM];      (* BISHOP *)
-     "Q": INTP := XTUMP[EQ,JNTM];      (* QUEEN *)
-     "K": INTP := XTUMP[EK,JNTM];      (* KING *)
+     'P': INTP := XTUMP[EP,JNTM];      (* PAWN *)
+     'R': INTP := XTUMP[ER,JNTM];      (* ROOK *)
+     'N': INTP := XTUMP[EN,JNTM];      (* KNIGNT *)
+     'B': INTP := XTUMP[EB,JNTM];      (* BISHOP *)
+     'Q': INTP := XTUMP[EQ,JNTM];      (* QUEEN *)
+     'K': INTP := XTUMP[EK,JNTM];      (* KING *)
     END;
   END;  (* YRMPCM  *)
 
@@ -3817,10 +3821,10 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "R": INTG := PR;                  (* ROOK *)
-     "N": INTG := PN;                  (* KNIGHT *)
-     "B": INTG := PB;                  (* BISHOP *)
-     "Q": INTG := PQ;                  (* QUEEN *)
+     'R': INTG := PR;                  (* ROOK *)
+     'N': INTG := PN;                  (* KNIGHT *)
+     'B': INTG := PB;                  (* BISHOP *)
+     'Q': INTG := PQ;                  (* QUEEN *)
     END;
    IFPR := TRUE;
   END;  (* YRMPRO *)
@@ -3830,8 +3834,8 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "K": INRF := [F5..F8] * INRF;     (* KING SIDE *)
-     "Q": INRF := [F1..F4] * INRF;     (* QUEEN SIDE *)
+     'K': INRF := [F5..F8] * INRF;     (* KING SIDE *)
+     'Q': INRF := [F1..F4] * INRF;     (* QUEEN SIDE *)
     END;
     IFRF := TRUE;
   END;  (* YRMRKQ *)
@@ -3841,9 +3845,9 @@ VAR
 
   BEGIN
     CASE INTC OF
-     "R":  INRF := [F1,F8] * INRF;     (* ROOK FILE *)
-     "N":  INRF := [F2,F7] * INRF;     (* KNIGHT FILE *)
-     "B":  INRF := [F3,F6] * INRF;     (* BISHOP FILE *)
+     'R':  INRF := [F1,F8] * INRF;     (* ROOK FILE *)
+     'N':  INRF := [F2,F7] * INRF;     (* KNIGHT FILE *)
+     'B':  INRF := [F3,F6] * INRF;     (* BISHOP FILE *)
     END;
     IFRD := TRUE;
   END;  (* YRMRRB *)
@@ -3854,25 +3858,25 @@ VAR
   BEGIN
     IF JNTM = LITE THEN
       CASE INTC OF
-       "1": INRR := [R1];
-       "2": INRR := [R2];
-       "3": INRR := [R3];
-       "4": INRR := [R4];
-       "5": INRR := [R5];
-       "6": INRR := [R6];
-       "7": INRR := [R7];
-       "8": INRR := [R8];
+       '1': INRR := [R1];
+       '2': INRR := [R2];
+       '3': INRR := [R3];
+       '4': INRR := [R4];
+       '5': INRR := [R5];
+       '6': INRR := [R6];
+       '7': INRR := [R7];
+       '8': INRR := [R8];
       END
     ELSE
       CASE INTC OF
-       "1": INRR := [R8];
-       "2": INRR := [R7];
-       "3": INRR := [R6];
-       "4": INRR := [R5];
-       "5": INRR := [R4];
-       "6": INRR := [R3];
-       "7": INRR := [R2];
-       "8": INRR := [R1];
+       '1': INRR := [R8];
+       '2': INRR := [R7];
+       '3': INRR := [R6];
+       '4': INRR := [R5];
+       '5': INRR := [R4];
+       '6': INRR := [R3];
+       '7': INRR := [R2];
+       '8': INRR := [R1];
       END;
   END;  (* YRMRRK *)
 
@@ -3895,10 +3899,10 @@ VAR
       YRMXXX;
       JNTJ := JNTJ+1;                  (* ADVANCE PAST CHARACTER *)
       WHILE (JNTJ < ZJ)
-         AND ((ILINE[JNTJ]=  " ") OR (ORD(ILINE[JNTJ]) > ORD(ZC))) DO
+         AND ((ILINE[JNTJ]=  ' ') OR (ORD(ILINE[JNTJ]) > ORD(ZC))) DO
         JNTJ  := JNTJ+1;               (* SKIP BLANKS *)
       INTC := ILINE[JNTJ];             (* NEXT  CHARACTER *)
-      IF (INTC = ".") OR (INTC = ";") THEN
+      IF (INTC = '.') OR (INTC = ';') THEN
       begin
         fgoto := true; GOTO 150;       (* EXIT SCAN *)
       end;
@@ -3910,7 +3914,7 @@ VAR
 
 BEGIN  (* YRMOVE *)
   INTB := FALSE;
-170:; 150: 
+170:; 150:
   WHILE (NOT INTB) OR fgoto OR fgoto17 DO
   BEGIN
     if fgoto then begin fgoto := false; goto 15; end;
@@ -3934,31 +3938,31 @@ BEGIN  (* YRMOVE *)
     INRR := [R1..R8];
     INTC := ILINE[JNTJ];
 
-    IF     NCHIN(["P","R","N","B","Q","K"],YRMPCM) THEN GOTO 14;
-    IF     NCHIN(["/"]                    ,YRMNUL) THEN GOTO 11;
-    IF     NCHIN(["K","Q"]                ,YRMLKQ) THEN;
-    IF     NCHIN(["R","N","B"]            ,YRMLRB) THEN;
-    IF     NCHIN(["1".."8"]               ,YRMLRK) THEN;
+    IF     NCHIN(['P','R','N','B','Q','K'],YRMPCM) THEN GOTO 14;
+    IF     NCHIN(['/']                    ,YRMNUL) THEN GOTO 11;
+    IF     NCHIN(['K','Q']                ,YRMLKQ) THEN;
+    IF     NCHIN(['R','N','B']            ,YRMLRB) THEN;
+    IF     NCHIN(['1'..'8']               ,YRMLRK) THEN;
 11:  (* LEFT SIDE DONE *)
-    IF NOT NCHIN(["-"]                    ,YRMNUL) THEN GOTO 12;
-    IF     NCHIN(["+","X"]                ,YRMCAP) THEN GOTO 16;
-    IF     NCHIN(["P","R","N","B","Q"]    ,YRMCPC) THEN GOTO 16;
-    IF     NCHIN(["/"]                    ,YRMNUL) THEN GOTO 13;
+    IF NOT NCHIN(['-']                    ,YRMNUL) THEN GOTO 12;
+    IF     NCHIN(['+','X']                ,YRMCAP) THEN GOTO 16;
+    IF     NCHIN(['P','R','N','B','Q']    ,YRMCPC) THEN GOTO 16;
+    IF     NCHIN(['/']                    ,YRMNUL) THEN GOTO 13;
 12:  (* RIGHT SIDE SQUARE *)
-    IF     NCHIN(["K","Q"]                ,YRMRKQ) THEN;
-    IF     NCHIN(["R","N","B"]            ,YRMRRB) THEN;
-    IF     NCHIN(["1".."8"]               ,YRMRRK) THEN;
+    IF     NCHIN(['K','Q']                ,YRMRKQ) THEN;
+    IF     NCHIN(['R','N','B']            ,YRMRRB) THEN;
+    IF     NCHIN(['1'..'8']               ,YRMRRK) THEN;
 13:  (*  PROMOTION  *)
-    IF     NCHIN(["="]                    ,YRMNUL) THEN  GOTO  15;
-    IF     NCHIN(["R","N","B","Q"]        ,YRMPRO) THEN  GOTO  16;
+    IF     NCHIN(['=']                    ,YRMNUL) THEN  GOTO  15;
+    IF     NCHIN(['R','N','B','Q']        ,YRMPRO) THEN  GOTO  16;
     GOTO  15;
 
 14:  (*  CASTLING  *)
-    IF     NCHIN(["O","0"]                ,YRMNUL) THEN GOTO  16;
-    IF     NCHIN(["-"]                    ,YRMNUL) THEN GOTO  16;
-    IF     NCHIN(["O","0"]                ,YRMCAS) THEN GOTO  16;
-    IF     NCHIN(["-"]                    ,YRMCQS) THEN GOTO  15;
-    IF     NCHIN(["O","0"]                ,YRMNUL) THEN GOTO  16;
+    IF     NCHIN(['O','0']                ,YRMNUL) THEN GOTO  16;
+    IF     NCHIN(['-']                    ,YRMNUL) THEN GOTO  16;
+    IF     NCHIN(['O','0']                ,YRMCAS) THEN GOTO  16;
+    IF     NCHIN(['-']                    ,YRMCQS) THEN GOTO  15;
+    IF     NCHIN(['O','0']                ,YRMNUL) THEN GOTO  16;
 15:  (*  SYNTAX  CORRECT   *)
 
     IF IFRF AND NOT IFRD THEN
@@ -3987,30 +3991,30 @@ BEGIN  (* YRMOVE *)
       END;
     IF IFMV THEN                       (* ONE MOVE FOUND *)
     BEGIN
-      MINENG(INRM,"YOUR MOVE ");       (* CONVERT TO OUR STYLE *)
+      MINENG(INRM,'YOUR MOVE ');       (* CONVERT TO OUR STYLE *)
       WRITELN(MOVMS);                  (* PRINT MOVE *)
       THEMOV(INRM);                    (* MAKE THE MOVE *)
       INTB := TRUE;                    (* EXIT YRMOVE *)
     END
     ELSE                               (* NO MOVES FOUND *)
-      WRITELN("   ILLEGAL MOVE.");
+      WRITELN('   ILLEGAL MOVE.');
     GOTO  18;                          (* EXIT *)
 16:  (*  SYNTAX  ERROR  *)
-    WRITELN(" SYNTAX ERROR.");
+    WRITELN(' SYNTAX ERROR.');
     GOTO  18;                          (* EXIT *)
 17:  (* AMBIGUOUS MOVE *)
-    WRITELN("   AMBIGUOUS MOVE.");
+    WRITELN('   AMBIGUOUS MOVE.');
 18:  (* EXIT *)
   END;
 END;  (* YRMOVE *)
 
 BEGIN  (* THE PROGRAM *)
   fgoto := false; fgoto17 := false;
-  WRITELN(" HI.  THIS IS CHESS .5");
+  WRITELN(' HI.  THIS IS CHESS .5');
   INICON;                              (* INITIALIZE CONSTANTS *)
 1:  (* INITIALIZE FOR A NEW GAME *)
   INITAL(BOARD);                       (* INITIALIZE FOR A NEW GAME *)
-200:  
+200:
   REPEAT
     if fgoto then begin fgoto := false; goto 2; end;
     REPEAT
