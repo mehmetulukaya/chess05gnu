@@ -18,3 +18,7 @@ http://forum.lazarus.freepascal.org/index.php/topic,42579.0.html
 However this repo created for historical chess software.
 
 It is a console software and you can play only by keyboard commands.
+
+Runtime:
+
+![Chess](https://github.com/mehmetulukaya/chess05gnu/blob/master/chess05gnu.png)
